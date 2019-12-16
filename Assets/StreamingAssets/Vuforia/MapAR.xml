@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
+  <Tracking>
+    <ImageTarget name="Rome-img-2" size="0.100000 0.109434" />
+    <ImageTarget name="London-img" size="0.100000 0.093736" />
+    <ImageTarget name="Amsterdam-img" size="0.100000 0.091098" />
+    <ImageTarget name="Athens-img" size="0.100000 0.096385" />
+    <ImageTarget name="Barcelona-img" size="0.100000 0.085966" />
+    <ImageTarget name="Budapest-img" size="0.100000 0.057423" />
+    <ImageTarget name="Rome-img" size="0.100000 0.087118" />
+    <ImageTarget name="Seville-img" size="0.100000 0.078590" />
+    <ImageTarget name="Venice-img" size="0.100000 0.085507" />
+  </Tracking>
+</QCARConfig>
