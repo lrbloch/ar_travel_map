@@ -2,39 +2,42 @@
 using Vuforia;
 using UnityEngine.UI;
 
-public class LoadImage : MonoBehaviour, ITrackableEventHandler
+public class LoadImage : MonoBehaviour
 {
-    public GameObject imageDisplay;
-    public string imageFolder;
-    public GameObject button;
+    public Canvas inputCanvas;
+    public GameObject inputImageDisplay;
+    public GameObject inputButton;
 
-    private Object[] images;
-    private int imageIndex;
-    private Vector2 startMousePos;
-    private TrackableBehaviour mTrackableBehaviour;
+    public static Canvas curCanvas;
+    public static GameObject imageDisplay;
+    private static string imageFolder;
+    public static GameObject button;
 
-    private System.DateTime lastInteractionTime;
+    private static Object[] images;
+    private static int imageIndex;
+    private static Vector2 startMousePos;
+
+    private static System.DateTime lastInteractionTime;
     private readonly int TRACKING_MAX_TIME = 5;
 
     // Use this for initialization
     public void Start()
     {
+        curCanvas = inputCanvas;
+        imageDisplay = inputImageDisplay;
+        button = inputButton;
+
+        Debug.Log("START! button: " + button.name);
+        curCanvas.enabled = false;
         imageDisplay.SetActive(false);
         button.SetActive(false);
         imageIndex = 0;
-        mTrackableBehaviour = GetComponent<TrackableBehaviour>();
-        if (mTrackableBehaviour)
-            mTrackableBehaviour.RegisterTrackableEventHandler(this);
     }
 
-    protected virtual void OnDestroy()
+    public static void Show(string folderLoc)
     {
-        if (mTrackableBehaviour)
-            mTrackableBehaviour.UnregisterTrackableEventHandler(this);
-    }
-
-    public void Show()
-    {
+        imageFolder = folderLoc;
+        button.SetActive(true);
         if (imageFolder.Length != 0)
         {
             LoadImagesFromFolder();
@@ -52,69 +55,52 @@ public class LoadImage : MonoBehaviour, ITrackableEventHandler
         button.SetActive(false);
     }
 
-    private void LoadImagesFromFolder()
+    private static void LoadImagesFromFolder()
     {
         Debug.Log("ImageFolder:  " + imageFolder);
         images = Resources.LoadAll(imageFolder, typeof(Texture2D));
         Debug.Log("images length: " + images.Length);
     }
 
-    private void DisplayImage()
+    private static void DisplayImage()
     {
-
         // change texture to next image in folder
         Texture2D texture = (Texture2D)images[imageIndex];
         Debug.Log("index: " + imageIndex + ", texture: " + texture.name);
         UnityEngine.UI.Image imageRenderer = imageDisplay.GetComponent<UnityEngine.UI.Image>();
-        if(texture.width >= texture.height)
-        {
-            if(texture.width > Screen.width)
-            {
-                int scaleFactor = texture.width / Screen.width;
-                texture.width /= scaleFactor;
-                texture.height /= scaleFactor;
-            }
-        }
-        else
-        {
-            if(texture.height > Screen.height)
-            {
-                int scaleFactor = texture.height / Screen.height;
-                texture.width /= scaleFactor;
-                texture.height /= scaleFactor;
-            }
-        }
+        //if(texture.width >= texture.height)
+        //{
+        //    if(texture.width > Screen.width)
+        //    {
+        //        int scaleFactor = texture.width / Screen.width;
+        //        texture.width /= scaleFactor;
+        //        texture.height /= scaleFactor;
+        //    }
+        //}
+        //else
+        //{
+        //    if(texture.height > Screen.height)
+        //    {
+        //        int scaleFactor = texture.height / Screen.height;
+        //        texture.width /= scaleFactor;
+        //        texture.height /= scaleFactor;
+        //    }
+        //}
         Sprite imageSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0, 0));
         imageRenderer.sprite = imageSprite;
         //Renderer imageRenderer = imageDisplay.GetComponent<MeshRenderer>();
         //imageRenderer.material.mainTexture = texture;
         imageRenderer.preserveAspect = true;
-        
+
         //imageRenderer.material.EnableKeyword("_SPECULARHIGHLIGHTS_OFF");
         //imageRenderer.material.SetFloat("_SpecularHighlights", 1f);
+        curCanvas.enabled = true;
         imageDisplay.SetActive(false);
         imageDisplay.SetActive(true);
 
         lastInteractionTime = System.DateTime.Now;
     }
     
-
-    public void OnTrackableStateChanged(TrackableBehaviour.Status previousStatus, TrackableBehaviour.Status newStatus)
-    {
-        Debug.Log("MY Trackable " + mTrackableBehaviour.TrackableName +
-                  " " + mTrackableBehaviour.CurrentStatus +
-                  " -- " + mTrackableBehaviour.CurrentStatusInfo);
-
-        if (newStatus == TrackableBehaviour.Status.DETECTED ||
-            newStatus == TrackableBehaviour.Status.TRACKED ||
-            newStatus == TrackableBehaviour.Status.EXTENDED_TRACKED ||
-            newStatus == TrackableBehaviour.Status.LIMITED)
-        {
-            // Show image when target is found
-            Show();
-            button.SetActive(true);
-        }
-    }
 
     // Update is called once per frame
     void Update()
